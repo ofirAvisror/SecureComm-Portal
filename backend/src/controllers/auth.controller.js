@@ -1,3 +1,4 @@
+// auth.controller.js
 const pool = require('../db/pool');
 const passwordService = require('../services/password.service');
 const tokenService = require('../services/token.service');
