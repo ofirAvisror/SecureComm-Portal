@@ -1,4 +1,4 @@
-# Comunication_LTD – Secure variant (`original/`)
+# Comunication_LTD – Secure variant (`secure-version/`)
 
 Web system for **Comunication_LTD**: users, customers, **packages**, and **sectors** catalog.
 This folder is the **non-vulnerable** submission for Part B (fixes: parameterized SQL, HTML encoding).

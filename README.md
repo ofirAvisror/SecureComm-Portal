@@ -6,12 +6,12 @@ Web system for **Comunication_LTD** (customers, internet packages, marketing sec
 
 | Folder | Role |
 |--------|------|
-| **`original/`** | **Secure** variant – Part A + Part B fixes (parameters, HTML encoding) |
+| **`secure-version/`** | **Secure** variant – Part A + Part B fixes (parameters, HTML encoding) |
 | **`vulnerable-version/`** | **Vulnerable** variant – Part A + intentional SQLi (sections 1, 3, 4) and Stored XSS (section 4) |
 
 **Run:** open the chosen folder, configure `backend/.env`, run `npm run db:init` in `backend`, then `npm run dev` in both `backend` and `frontend`.
 
-Full setup details: `original/README.md` (same structure in `vulnerable-version`).
+Full setup details: `secure-version/README.md` (same structure in `vulnerable-version`).
 
 ## Part A
 
@@ -19,7 +19,7 @@ Both variants include: Register, Login, change password, forgot password (SHA-1)
 
 ## Part B
 
-| Requirement | `vulnerable-version` | `original` |
+| Requirement | `vulnerable-version` | `secure-version` |
 |-------------|----------------------|------------|
 | Stored XSS – section 4 (Dashboard) | `dangerouslySetInnerHTML` on customer name | `escapeHtml` + safe text |
 | SQLi – sections 1, 3, 4 | String concatenation in SQL | Prepared statements (`$1`, `$2`, …) |
@@ -37,6 +37,6 @@ PostgreSQL. Tables: `users`, `customers`, **`packages`**, **`sectors`**, `passwo
 After a schema change, use a fresh database or `DROP` old tables, then:
 
 ```bash
-cd original/backend   # or vulnerable-version/backend
+cd secure-version/backend   # or vulnerable-version/backend
 npm run db:init
 ```

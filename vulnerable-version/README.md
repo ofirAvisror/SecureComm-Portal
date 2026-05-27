@@ -1,9 +1,9 @@
 # Comunication_LTD – Vulnerable variant (`vulnerable-version/`)
 
-**For Part B attack demonstrations only.** Same Part A features as `original/`, but with
+**For Part B attack demonstrations only.** Same Part A features as `secure-version/`, but with
 intentional SQL injection (sections 1, 3, 4) and Stored/Reflected XSS (sections 1, 4).
 
-Do **not** deploy publicly. Use **`../original/`** for the secure submission.
+Do **not** deploy publicly. Use **`../secure-version/`** for the secure submission.
 
 Guides: [../README.md](../README.md), [../PART_B_GUIDE.md](../PART_B_GUIDE.md).
 
@@ -200,4 +200,4 @@ See `backend/.env.example`. The most security-relevant ones:
 | 4 | SQLi when adding customer | `customers.controller.js` |
 | 4 | Stored XSS in customer name display | `frontend/src/pages/Dashboard.jsx` |
 
-Fixes are implemented in **`../original/`**.
+Fixes are implemented in **`../secure-version/`**.

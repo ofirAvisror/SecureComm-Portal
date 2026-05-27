@@ -1,6 +1,6 @@
 # Part B – Demonstration Guide (no screenshots)
 
-Run **`vulnerable-version`** only to demonstrate attacks, and **`original`** to demonstrate blocking and fixes.
+Run **`vulnerable-version`** only to demonstrate attacks, and **`secure-version`** to demonstrate blocking and fixes.
 
 ## Section 4 – Stored XSS (system screen / Dashboard)
 
