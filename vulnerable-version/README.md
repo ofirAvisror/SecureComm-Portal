@@ -1,8 +1,11 @@
-# Comunication_LTD - Secure Web System (Final Project - Cyber)
+# Comunication_LTD – Vulnerable variant (`vulnerable-version/`)
 
-A web information system for the fictional communication company **Comunication_LTD**.
-The system manages user accounts, customer records, and internet packages, and is built
-according to secure-development principles required by the cyber course final project (Part A).
+**For Part B attack demonstrations only.** Same Part A features as `original/`, but with
+intentional SQL injection (sections 1, 3, 4) and Stored/Reflected XSS (sections 1, 4).
+
+Do **not** deploy publicly. Use **`../original/`** for the secure submission.
+
+Guides: [../README.md](../README.md), [../PART_B_GUIDE.md](../PART_B_GUIDE.md).
 
 ## Tech stack
 
@@ -187,12 +190,14 @@ See `backend/.env.example`. The most security-relevant ones:
 - `SESSION_SECRET` - **required** in production for session cookie signing.
 - `SMTP_*` - required for the forgot-password flow to deliver real email.
 
-## Notes about Part A scope
+## Part B vulnerabilities (this variant)
 
-This repository implements the secure version of Part A only:
-register, login, change password, system screen with new-customer entry and display of
-the most recently entered customer name, and forgot-password with an SHA-1-hashed code.
+| Section | Issue | Location |
+|---------|-------|----------|
+| 1 | SQLi in register | `backend/src/controllers/auth.controller.js` |
+| 1 | Reflected XSS on failed register | `frontend/src/pages/Register.jsx` |
+| 3 | SQLi in login | `auth.controller.js` |
+| 4 | SQLi when adding customer | `customers.controller.js` |
+| 4 | Stored XSS in customer name display | `frontend/src/pages/Dashboard.jsx` |
 
-There is no deliberately vulnerable variant in this repo - the design prevents SQL
-injection, weak password storage, and stored XSS in customer fields by validating and
-escaping inputs and using parameterized queries throughout.
+Fixes are implemented in **`../original/`**.

@@ -1,8 +1,10 @@
-# Comunication_LTD - Secure Web System (Final Project - Cyber)
+# Comunication_LTD – Secure variant (`original/`)
 
-A web information system for the fictional communication company **Comunication_LTD**.
-The system manages user accounts, customer records, and internet packages, and is built
-according to secure-development principles required by the cyber course final project (Part A).
+Web system for **Comunication_LTD**: users, customers, **packages**, and **sectors** catalog.
+This folder is the **non-vulnerable** submission for Part B (fixes: parameterized SQL, HTML encoding).
+
+See the repository root [README.md](../README.md) and [PART_B_GUIDE.md](../PART_B_GUIDE.md).
+The deliberately vulnerable code lives in **`../vulnerable-version/`**.
 
 ## Tech stack
 
@@ -176,6 +178,8 @@ input is never concatenated into SQL strings.
 | POST   | `/api/auth/change-password`  | yes  | Change password (current required)     |
 | POST   | `/api/auth/forgot-password`  | -    | Send reset code by email (SHA-1)       |
 | POST   | `/api/auth/reset-password`   | -    | Consume reset code + set new password  |
+| GET    | `/api/catalog/packages`      | yes  | Internet packages catalog              |
+| GET    | `/api/catalog/sectors`       | yes  | Marketing sectors catalog              |
 | POST   | `/api/customers`             | yes  | Add Comunication_LTD customer          |
 | GET    | `/api/customers`             | yes  | List most-recent customers             |
 
@@ -187,12 +191,15 @@ See `backend/.env.example`. The most security-relevant ones:
 - `SESSION_SECRET` - **required** in production for session cookie signing.
 - `SMTP_*` - required for the forgot-password flow to deliver real email.
 
-## Notes about Part A scope
+## Part B fixes (this variant)
 
-This repository implements the secure version of Part A only:
-register, login, change password, system screen with new-customer entry and display of
-the most recently entered customer name, and forgot-password with an SHA-1-hashed code.
+| Section | Mechanism | Where |
+|---------|-----------|--------|
+| 1 – encoding | `escapeHtml()` on Register username echo + customer names | `frontend/src/utils/escapeHtml.js`, `Register.jsx`, `Dashboard.jsx` |
+| 1, 3, 4 – SQLi | Parameterized queries | `auth.controller.js`, `customers.controller.js` |
+| 4 – Stored XSS | No raw HTML rendering of `full_name` | `Dashboard.jsx` |
 
-There is no deliberately vulnerable variant in this repo - the design prevents SQL
-injection, weak password storage, and stored XSS in customer fields by validating and
-escaping inputs and using parameterized queries throughout.
+## Database upgrade
+
+If you used an older schema (with `package_name` / `sector` columns on `customers`), drop the
+database or run `DROP TABLE customers;` then `npm run db:init` to recreate tables and seed data.

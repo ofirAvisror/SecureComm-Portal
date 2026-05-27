@@ -4,6 +4,7 @@ import { Link as RouterLink, useNavigate } from 'react-router-dom';
 import { useAuth } from '../state/AuthContext';
 import { extractApiError } from '../api/client';
 import PasswordPolicyHint from '../components/PasswordPolicyHint';
+import { escapeHtml } from '../utils/escapeHtml';
 
 export default function Register() {
   const { register } = useAuth();
@@ -73,6 +74,11 @@ export default function Register() {
           />
           <PasswordPolicyHint />
           {error && <Alert severity="error">{error}</Alert>}
+          {error && form.username && (
+            <Alert severity="info">
+              Attempted username (encoded): {escapeHtml(form.username)}
+            </Alert>
+          )}
           <Button type="submit" variant="contained" disabled={submitting}>
             {submitting ? 'Creating account...' : 'Register'}
           </Button>

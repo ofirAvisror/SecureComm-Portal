@@ -1,4 +1,4 @@
-// auth.controller.js
+// auth.controller.js — PART B: deliberate SQL injection in register (section 1) and login (section 3).
 const pool = require('../db/pool');
 const passwordService = require('../services/password.service');
 const tokenService = require('../services/token.service');
@@ -20,9 +20,7 @@ async function register(req, res, next) {
   try {
     const { username, email, password } = req.body || {};
 
-    // if (!isValidUsername(username)) {
-    //   return res.status(400).json({ error: 'Invalid username. Use 3-64 characters: letters, digits, dot, underscore, hyphen.' });
-    // }
+    // Username validation disabled intentionally for Part B SQLi demos (section 1).
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Invalid email address.' });
     }

@@ -8,6 +8,7 @@ const ConnectPgSimple = require('connect-pg-simple')(session);
 
 const pool = require('./db/pool');
 const authRoutes = require('./routes/auth.routes');
+const catalogRoutes = require('./routes/catalog.routes');
 const customersRoutes = require('./routes/customers.routes');
 const errorHandler = require('./middleware/errorHandler');
 
@@ -55,6 +56,7 @@ app.get('/api/health', (req, res) => {
 });
 
 app.use('/api/auth', authRoutes);
+app.use('/api/catalog', catalogRoutes);
 app.use('/api/customers', customersRoutes);
 
 app.use((req, res) => {

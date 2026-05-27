@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import {
   Container, Paper, Typography, TextField, Button, Alert, Box, Grid,
-  Table, TableHead, TableRow, TableCell, TableBody, Divider
+  Table, TableHead, TableRow, TableCell, TableBody, Divider,
+  FormControl, InputLabel, Select, MenuItem
 } from '@mui/material';
 import apiClient, { extractApiError } from '../api/client';
 import { useAuth } from '../state/AuthContext';
@@ -10,13 +11,15 @@ const initialForm = {
   fullName: '',
   email: '',
   phone: '',
-  packageName: '',
-  sector: ''
+  packageId: '',
+  sectorId: ''
 };
 
 export default function Dashboard() {
   const { user } = useAuth();
   const [form, setForm] = useState(initialForm);
+  const [packages, setPackages] = useState([]);
+  const [sectors, setSectors] = useState([]);
   const [customers, setCustomers] = useState([]);
   const [lastAdded, setLastAdded] = useState(null);
   const [error, setError] = useState('');
@@ -31,7 +34,21 @@ export default function Dashboard() {
     }
   };
 
+  const loadCatalog = async () => {
+    try {
+      const [pkgRes, secRes] = await Promise.all([
+        apiClient.get('/catalog/packages'),
+        apiClient.get('/catalog/sectors')
+      ]);
+      setPackages(pkgRes.data.packages || []);
+      setSectors(secRes.data.sectors || []);
+    } catch (err) {
+      setError(extractApiError(err, 'Failed to load packages and sectors.'));
+    }
+  };
+
   useEffect(() => {
+    loadCatalog();
     loadCustomers();
   }, []);
 
@@ -99,22 +116,36 @@ export default function Dashboard() {
               />
             </Grid>
             <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Internet package"
-                value={form.packageName}
-                onChange={handleChange('packageName')}
-                inputProps={{ maxLength: 80 }}
-              />
+              <FormControl fullWidth>
+                <InputLabel id="package-label">Internet package</InputLabel>
+                <Select
+                  labelId="package-label"
+                  label="Internet package"
+                  value={form.packageId}
+                  onChange={handleChange('packageId')}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {packages.map(p => (
+                    <MenuItem key={p.id} value={String(p.id)}>{p.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
             <Grid item xs={12} sm={4}>
-              <TextField
-                fullWidth
-                label="Sector"
-                value={form.sector}
-                onChange={handleChange('sector')}
-                inputProps={{ maxLength: 80 }}
-              />
+              <FormControl fullWidth>
+                <InputLabel id="sector-label">Sector</InputLabel>
+                <Select
+                  labelId="sector-label"
+                  label="Sector"
+                  value={form.sectorId}
+                  onChange={handleChange('sectorId')}
+                >
+                  <MenuItem value="">None</MenuItem>
+                  {sectors.map(s => (
+                    <MenuItem key={s.id} value={String(s.id)}>{s.name}</MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
             </Grid>
           </Grid>
 
@@ -131,6 +162,7 @@ export default function Dashboard() {
           <Box sx={{ mt: 3 }}>
             <Divider sx={{ mb: 2 }} />
             <Alert severity="success">
+              {/* PART B (section 4): stored XSS */}
               New customer added: <strong dangerouslySetInnerHTML={{ __html: lastAdded.full_name }} />
             </Alert>
           </Box>

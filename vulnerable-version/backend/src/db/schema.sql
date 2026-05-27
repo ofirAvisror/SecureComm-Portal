@@ -31,15 +31,28 @@ CREATE TABLE IF NOT EXISTS password_resets (
 
 CREATE INDEX IF NOT EXISTS idx_password_resets_token ON password_resets (token_sha1);
 
+CREATE TABLE IF NOT EXISTS sectors (
+  id          SERIAL PRIMARY KEY,
+  name        VARCHAR(80) UNIQUE NOT NULL,
+  description VARCHAR(255)
+);
+
+CREATE TABLE IF NOT EXISTS packages (
+  id             SERIAL PRIMARY KEY,
+  name           VARCHAR(80) UNIQUE NOT NULL,
+  speed_mbps     INT,
+  monthly_price  NUMERIC(10, 2)
+);
+
 CREATE TABLE IF NOT EXISTS customers (
-  id            SERIAL PRIMARY KEY,
-  full_name     VARCHAR(120) NOT NULL,
-  email         VARCHAR(255) NOT NULL,
-  phone         VARCHAR(32),
-  package_name  VARCHAR(80),
-  sector        VARCHAR(80),
-  created_by    INT REFERENCES users(id) ON DELETE SET NULL,
-  created_at    TIMESTAMPTZ NOT NULL DEFAULT now()
+  id           SERIAL PRIMARY KEY,
+  full_name    VARCHAR(120) NOT NULL,
+  email        VARCHAR(255) NOT NULL,
+  phone        VARCHAR(32),
+  package_id   INT REFERENCES packages(id) ON DELETE SET NULL,
+  sector_id    INT REFERENCES sectors(id) ON DELETE SET NULL,
+  created_by   INT REFERENCES users(id) ON DELETE SET NULL,
+  created_at   TIMESTAMPTZ NOT NULL DEFAULT now()
 );
 
 CREATE TABLE IF NOT EXISTS "session" (

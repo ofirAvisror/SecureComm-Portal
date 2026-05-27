@@ -1,28 +1,19 @@
+// PART B: deliberate SQL injection in createCustomer (section 4).
 const pool = require('../db/pool');
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-function sanitizeOptionalString(value, maxLength) {
-  if (value === undefined || value === null) {
-    return null;
+function sqlLiteral(value) {
+  if (value === undefined || value === null || value === '') {
+    return 'NULL';
   }
-  if (typeof value !== 'string') {
-    return null;
-  }
-  const trimmed = value.trim();
-  if (trimmed.length === 0) {
-    return null;
-  }
-  if (trimmed.length > maxLength) {
-    return trimmed.substring(0, maxLength);
-  }
-  return trimmed;
+  return `'${String(value).replace(/'/g, "''")}'`;
 }
 
 async function createCustomer(req, res, next) {
   try {
     const userId = req.session.userId;
-    const { fullName, email, phone, packageName, sector } = req.body || {};
+    const { fullName, email, phone, packageId, sectorId } = req.body || {};
 
     if (typeof fullName !== 'string' || fullName.trim().length === 0) {
       return res.status(400).json({ error: 'Full name is required (up to 120 characters).' });
@@ -31,17 +22,24 @@ async function createCustomer(req, res, next) {
       return res.status(400).json({ error: 'Valid customer email is required.' });
     }
 
-    const phoneClean = sanitizeOptionalString(phone, 32);
-    const packageClean = sanitizeOptionalString(packageName, 80);
-    const sectorClean = sanitizeOptionalString(sector, 80);
+    const phoneSql = sqlLiteral(phone);
+    const packageSql = sqlLiteral(packageId);
+    const sectorSql = sqlLiteral(sectorId);
 
     const result = await pool.query(
-        `INSERT INTO customers (full_name, email, phone, package_name, sector, created_by)
-   VALUES ('${fullName}', '${email}', '${phone}', '${packageName}', '${sector}', ${userId})
-   RETURNING id, full_name, email, phone, package_name, sector, created_at`
+      `INSERT INTO customers (full_name, email, phone, package_id, sector_id, created_by)
+       VALUES ('${fullName}', '${email}', ${phoneSql}, ${packageSql}, ${sectorSql}, ${userId})
+       RETURNING id, full_name, email, phone, created_at`
     );
 
-    return res.status(201).json({ customer: result.rows[0] });
+    const row = result.rows[0];
+    return res.status(201).json({
+      customer: {
+        ...row,
+        package_name: packageId ? String(packageId) : '',
+        sector: sectorId ? String(sectorId) : ''
+      }
+    });
   } catch (err) {
     return next(err);
   }
@@ -50,9 +48,13 @@ async function createCustomer(req, res, next) {
 async function listCustomers(req, res, next) {
   try {
     const result = await pool.query(
-      `SELECT id, full_name, email, phone, package_name, sector, created_at
-         FROM customers
-         ORDER BY created_at DESC
+      `SELECT c.id, c.full_name, c.email, c.phone,
+              p.name AS package_name, s.name AS sector,
+              c.created_at
+         FROM customers c
+         LEFT JOIN packages p ON p.id = c.package_id
+         LEFT JOIN sectors s ON s.id = c.sector_id
+         ORDER BY c.created_at DESC
          LIMIT 200`
     );
     return res.json({ customers: result.rows });

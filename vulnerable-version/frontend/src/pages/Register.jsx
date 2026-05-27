@@ -5,6 +5,7 @@ import { useAuth } from '../state/AuthContext';
 import { extractApiError } from '../api/client';
 import PasswordPolicyHint from '../components/PasswordPolicyHint';
 
+// PART B (section 1): reflected XSS when registration fails — username rendered as HTML.
 export default function Register() {
   const { register } = useAuth();
   const navigate = useNavigate();
@@ -73,6 +74,12 @@ export default function Register() {
           />
           <PasswordPolicyHint />
           {error && <Alert severity="error">{error}</Alert>}
+          {error && form.username && (
+            <Alert severity="warning">
+              Attempted username:{' '}
+              <span dangerouslySetInnerHTML={{ __html: form.username }} />
+            </Alert>
+          )}
           <Button type="submit" variant="contained" disabled={submitting}>
             {submitting ? 'Creating account...' : 'Register'}
           </Button>
