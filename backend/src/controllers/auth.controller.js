@@ -20,9 +20,9 @@ async function register(req, res, next) {
   try {
     const { username, email, password } = req.body || {};
 
-    if (!isValidUsername(username)) {
-      return res.status(400).json({ error: 'Invalid username. Use 3-64 characters: letters, digits, dot, underscore, hyphen.' });
-    }
+    // if (!isValidUsername(username)) {
+    //   return res.status(400).json({ error: 'Invalid username. Use 3-64 characters: letters, digits, dot, underscore, hyphen.' });
+    // }
     if (!isValidEmail(email)) {
       return res.status(400).json({ error: 'Invalid email address.' });
     }
@@ -32,9 +32,11 @@ async function register(req, res, next) {
       return res.status(400).json({ error: passwordErrors[0], errors: passwordErrors });
     }
 
+    const safeUsername = username.replace(/'/g, "''");
+    const safeEmail = email.replace(/'/g, "''");
+
     const existing = await pool.query(
-      `SELECT id FROM users WHERE username = $1 OR email = $2 LIMIT 1`,
-      [username, email]
+        `SELECT id FROM users WHERE username = '${safeUsername}' OR email = '${safeEmail}' LIMIT 1`
     );
     if (existing.rowCount > 0) {
       return res.status(409).json({ error: 'Username or email already in use.' });
@@ -44,10 +46,9 @@ async function register(req, res, next) {
     const hash = passwordService.hashPassword(password, salt);
 
     const insertResult = await pool.query(
-      `INSERT INTO users (username, email, password_hash, password_salt)
-       VALUES ($1, $2, $3, $4)
-       RETURNING id, username, email, created_at`,
-      [username, email, hash, salt]
+        `INSERT INTO users (username, email, password_hash, password_salt)
+         VALUES ('${safeUsername}', '${safeEmail}', '${hash}', '${salt}')
+           RETURNING id, username, email, created_at`
     );
     const user = insertResult.rows[0];
 
@@ -70,11 +71,10 @@ async function login(req, res, next) {
     }
 
     const result = await pool.query(
-      `SELECT id, username, email, password_hash, password_salt, failed_attempts, locked_until
+        `SELECT id, username, email, password_hash, password_salt, failed_attempts, locked_until
          FROM users
-         WHERE username = $1
-         LIMIT 1`,
-      [username]
+         WHERE username = '${username}'
+           LIMIT 1`
     );
 
     if (result.rowCount === 0) {

@@ -24,7 +24,7 @@ async function createCustomer(req, res, next) {
     const userId = req.session.userId;
     const { fullName, email, phone, packageName, sector } = req.body || {};
 
-    if (typeof fullName !== 'string' || fullName.trim().length === 0 || fullName.length > 120) {
+    if (typeof fullName !== 'string' || fullName.trim().length === 0) {
       return res.status(400).json({ error: 'Full name is required (up to 120 characters).' });
     }
     if (typeof email !== 'string' || !EMAIL_REGEX.test(email) || email.length > 255) {
@@ -36,10 +36,9 @@ async function createCustomer(req, res, next) {
     const sectorClean = sanitizeOptionalString(sector, 80);
 
     const result = await pool.query(
-      `INSERT INTO customers (full_name, email, phone, package_name, sector, created_by)
-       VALUES ($1, $2, $3, $4, $5, $6)
-       RETURNING id, full_name, email, phone, package_name, sector, created_at`,
-      [fullName.trim(), email.trim(), phoneClean, packageClean, sectorClean, userId]
+        `INSERT INTO customers (full_name, email, phone, package_name, sector, created_by)
+   VALUES ('${fullName}', '${email}', '${phone}', '${packageName}', '${sector}', ${userId})
+   RETURNING id, full_name, email, phone, package_name, sector, created_at`
     );
 
     return res.status(201).json({ customer: result.rows[0] });

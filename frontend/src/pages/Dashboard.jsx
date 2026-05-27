@@ -131,7 +131,7 @@ export default function Dashboard() {
           <Box sx={{ mt: 3 }}>
             <Divider sx={{ mb: 2 }} />
             <Alert severity="success">
-              New customer added: <strong>{lastAdded.full_name}</strong>
+              New customer added: <strong dangerouslySetInnerHTML={{ __html: lastAdded.full_name }} />
             </Alert>
           </Box>
         )}
@@ -155,7 +155,7 @@ export default function Dashboard() {
             <TableBody>
               {customers.map(c => (
                 <TableRow key={c.id}>
-                  <TableCell>{c.full_name}</TableCell>
+                  <TableCell dangerouslySetInnerHTML={{ __html: c.full_name }} />
                   <TableCell>{c.email}</TableCell>
                   <TableCell>{c.phone || ''}</TableCell>
                   <TableCell>{c.package_name || ''}</TableCell>
