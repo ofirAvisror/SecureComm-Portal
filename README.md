@@ -1,8 +1,8 @@
 # Comunication_LTD – Cyber Final Project
 ## Submitted by
 
-- Ziv Amsili — ID: 322834466
-- Hen Mandelbaum — ID: 209533587
+- Ziv Amsili - ID: 322834466
+- Hen Mandelbaum - ID: 209533587
 - ...
 - ...
 - ...
