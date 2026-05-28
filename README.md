@@ -3,8 +3,8 @@
 
 - Ziv Amsili - ID: 322834466
 - Hen Mandelbaum - ID: 209533587
-- ...
-- ...
+- Orel Cohen - ID: 214266819
+- Ofir Avisror - ID: 324974088
 - ...
 
 Web system for **Comunication_LTD** (customers, internet packages, marketing sectors), with **two variants** as required for Part B.
